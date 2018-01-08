@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dounine.crud.dao.IFruitDAO" >
+  <resultMap id="BaseResultMap" type="com.dounine.crud.entity.Fruit" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DOUBLE" />
+    <result column="fruitType" property="fruitType" javaType="com.dounine.crud.enums.FruitType" typeHandler="com.dounine.crud.base.FruitTypeHandle" jdbcType="INTEGER" />
+  </resultMap>
+  <!--  parameterType="java.lang.Integer" -->
+  <!-- #号传值会加上引号   ，  $号传值不会加上引号 -->
+  <!-- #{id,jdbcType=INTEGER} -->
+  <sql id="Base_Column_List" >
+    id, name, price, fruitType
+  </sql>
+  <select id="selectByName" resultMap="BaseResultMap" parameterType="string" >
+    select 
+    <include refid="Base_Column_List" />
+    from fruit
+    <!-- where name = #{name,jdbcType=VARCHAR} -->
+  </select>
+  <select id="selectById" resultMap="BaseResultMap" parameterType="string" >
+    select 
+    <include refid="Base_Column_List" />
+    from fruit
+    where id = #{id,jdbcType=VARCHAR} 
+  </select>
+  <delete id="deleteByName" parameterType="string" >
+    delete from fruit
+    where name = #{name,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteById" parameterType="string" >
+    delete from fruit
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByIds" parameterType="string" >
+    delete from fruit
+    
+    where id in <!-- #{id,jdbcType=VARCHAR} -->
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+  </delete>
+  <insert id="insert" parameterType="com.dounine.crud.entity.Fruit" >
+    insert into fruit (id, name, price, fruitType)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE}, 
+      #{fruitType, typeHandler=com.dounine.crud.base.FruitTypeHandle})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dounine.crud.entity.Fruit" >
+    insert into fruit
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="fruitType != null" >
+        fruitType,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+       name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="fruitType != null" >
+        fruitType = #{fruitType,typeHandler=com.dounine.crud.base.FruitTypeHandle}
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dounine.crud.entity.Fruit" >
+    update fruit
+    <set >
+      <if test="name != null" >
+         name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+       price = #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="fruitType != null" >
+         fruitType = #{fruitType,typeHandler=com.dounine.crud.base.FruitTypeHandle}
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateById" parameterType="com.dounine.crud.entity.Fruit" >
+    update fruit
+    set name = #{name,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DOUBLE},
+      fruitType = #{fruitType,typeHandler=com.dounine.crud.base.FruitTypeHandle}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateBatch" parameterType="java.util.List" >
+  <foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+    update fruit
+    <set >
+      <if test="name != null" >
+         name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+       price = #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="fruitType != null" >
+         fruitType = #{fruitType,typeHandler=com.dounine.crud.base.FruitTypeHandle}
+      </if>
+    </set>
+    where id = #{item.id,jdbcType=VARCHAR}
+    </foreach>
+  </update>
+</mapper>
